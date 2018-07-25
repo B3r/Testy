@@ -25,13 +25,13 @@ public class Car_low : MonoBehaviour {
     void Start () {
         weights = new Vector3[5];
         rig = GetComponent<Rigidbody>();
-        rig.velocity = new Vector3(0, 0, -5f);
+        rig.velocity = new Vector3(0, 0, 0f);
         isMoving = true;
         output = new Vector4(0.9f, 0.4f, 1f, 0);
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
+    }
+
+    // Update is called once per frame
+    void FixedUpdate () {
         if (isMoving)
         {
             RaycastHit hitRight, hitLeft;
@@ -48,12 +48,12 @@ public class Car_low : MonoBehaviour {
                 distLeft = hitLeft.distance;
             }
             //get speed
-            float currentSpeed = rig.velocity.magnitude;
+            currentSpeed = rig.velocity.magnitude;
 
             // neuronal here
             //output = calcOutputNeurons(distLeft,distRight,currentSpeed);
             //UpdateRotation(output);
-            //UpdateVelocity(output);
+            UpdateVelocity(output);
         }
 	}
 
@@ -67,13 +67,15 @@ public class Car_low : MonoBehaviour {
 
     void UpdateVelocity(Vector4 output)
     {
-        Vector3 vel = rig.velocity;
-        float deltaSpeed = output[2] - output[3];
-        float magn = vel.magnitude;
+        float deltaSpeed = (output[2] - output[3]) * Time.deltaTime;
+        Debug.Log("currentSpeed: " + currentSpeed);
+        Debug.Log("deltaSpeed: " + deltaSpeed);
         float angle = rig.rotation.y * DEGREES;
-        float resultX = (magn + deltaSpeed) * Mathf.Sin(angle);
-        float resultZ = (magn + deltaSpeed) * Mathf.Cos(angle);
-        rig.velocity = new Vector3(resultX, 0, resultZ) * Time.deltaTime;
+        float resultX = (currentSpeed + deltaSpeed) * Mathf.Sin(angle);
+        float resultZ = (currentSpeed + deltaSpeed) * Mathf.Cos(angle);
+        Debug.Log("velX: " + resultX);
+        Debug.Log("velZ: " + resultZ);
+        rig.velocity = new Vector3(resultX, 0, resultZ);
         Debug.Log("Velocity: " + rig.velocity);
     }
 
