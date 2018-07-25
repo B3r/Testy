@@ -1,38 +1,27 @@
 ﻿using UnityEngine;
 
-public class Car_low : MonoBehaviour {
-    private Vector3 velocity, input, output;
+public class Car : MonoBehaviour {
     private Rigidbody rig;
-    private bool isMoving;
     private readonly float DEGREES = 180f;
-    private float distLeft, distRight, currentSpeed;
-    private Vector3[] weights;
 
-    public Vector3[] Weights
-    {
-        get
-        {
-            return weights;
-        }
+    public float DistLeft { get; set; }
 
-        set
-        {
-            weights = value;
-        }
-    }
+    public float DistRight { get; set; }
+
+    public float CurrentSpeed { get; set; }
+
+    public bool IsMoving { get; set; }
 
     // Use this for initialization
     void Start () {
-        weights = new Vector3[5];
         rig = GetComponent<Rigidbody>();
         rig.velocity = new Vector3(0, 0, 0f);
-        isMoving = true;
-        output = new Vector4(0.9f, 0.4f, 1f, 0);
+        IsMoving = true;
     }
 
     // Update is called once per frame
     void FixedUpdate () {
-        if (isMoving)
+        if (IsMoving)
         {
             RaycastHit hitRight, hitLeft;
 
@@ -40,20 +29,15 @@ public class Car_low : MonoBehaviour {
             // Does the ray intersect any objects excluding the player layer
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hitRight, Mathf.Infinity))
             {
-                distRight = hitRight.distance;
+                DistRight = hitRight.distance;
             }
             //get distance to left
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hitLeft, Mathf.Infinity))
             {
-                distLeft = hitLeft.distance;
+                DistLeft = hitLeft.distance;
             }
             //get speed
-            currentSpeed = rig.velocity.magnitude;
-
-            // neuronal here
-            //output = calcOutputNeurons(distLeft,distRight,currentSpeed);
-            //UpdateRotation(output);
-            UpdateVelocity(output);
+            CurrentSpeed = rig.velocity.magnitude;
         }
 	}
 
@@ -62,21 +46,15 @@ public class Car_low : MonoBehaviour {
     {
         float angle = (output[0] - output[1]) * DEGREES;
         transform.Rotate(Vector3.up, angle);
-        Debug.Log("Rotation: " + rig.rotation);
     }
 
     void UpdateVelocity(Vector4 output)
     {
         float deltaSpeed = (output[2] - output[3]) * Time.deltaTime;
-        Debug.Log("currentSpeed: " + currentSpeed);
-        Debug.Log("deltaSpeed: " + deltaSpeed);
         float angle = rig.rotation.y * DEGREES;
-        float resultX = (currentSpeed + deltaSpeed) * Mathf.Sin(angle);
-        float resultZ = (currentSpeed + deltaSpeed) * Mathf.Cos(angle);
-        Debug.Log("velX: " + resultX);
-        Debug.Log("velZ: " + resultZ);
+        float resultX = (CurrentSpeed + deltaSpeed) * Mathf.Sin(angle);
+        float resultZ = (CurrentSpeed + deltaSpeed) * Mathf.Cos(angle);
         rig.velocity = new Vector3(resultX, 0, resultZ);
-        Debug.Log("Velocity: " + rig.velocity);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -84,7 +62,7 @@ public class Car_low : MonoBehaviour {
         if (collision.gameObject.name == "left" || collision.gameObject.name == "right" || collision.gameObject.name == "top" || collision.gameObject.name == "bot" || collision.gameObject.name == "mid")
         {
             Stop();
-            isMoving = false;
+            IsMoving = false;
         }
     }
 
@@ -94,7 +72,6 @@ public class Car_low : MonoBehaviour {
         rig.angularVelocity = Vector3.zero;
         rig.isKinematic = true;
         rig.Sleep();
-        Debug.Log("Position is: " + rig.position);
     }
 
 }
