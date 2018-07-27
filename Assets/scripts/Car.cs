@@ -15,7 +15,7 @@ public class Car : MonoBehaviour {
     // Use this for initialization
     void Start () {
         rig = GetComponent<Rigidbody>();
-        rig.velocity = new Vector3(0, 0, 0f);
+        rig.velocity = new Vector3(0f, 0f, 0f);
         IsMoving = true;
     }
 
@@ -38,17 +38,21 @@ public class Car : MonoBehaviour {
             }
             //get speed
             CurrentSpeed = rig.velocity.magnitude;
+            if(CurrentSpeed == 0)
+            {
+                IsMoving = false;
+            }
         }
 	}
 
     //turn left or right based on 180 degrees
-    void UpdateRotation(Vector4 output)
+    public void UpdateRotation(Vector4 output)
     {
         float angle = (output[0] - output[1]) * DEGREES;
         transform.Rotate(Vector3.up, angle);
     }
 
-    void UpdateVelocity(Vector4 output)
+    public void UpdateVelocity(Vector4 output)
     {
         float deltaSpeed = (output[2] - output[3]) * Time.deltaTime;
         float angle = rig.rotation.y * DEGREES;
